@@ -1,8 +1,8 @@
 {
-  "dev": {
-    "run": "pnpm run dev"
-  },
-  "database": "kuwenta",
-  "server": "maincloud",
-  "module-path": "./spacetimedb"
+	"dev": {
+		"run": "pnpm run dev"
+	},
+	"database": "kuwenta",
+	"server": "maincloud",
+	"module-path": "./spacetimedb"
 }
