@@ -3,11 +3,12 @@
 
 /* eslint-disable */
 /* tslint:disable */
-import { type Infer as __Infer } from 'spacetimedb';
+import { type Infer as __Infer } from "spacetimedb";
 
 // Import all reducer arg schemas
-import AddReducer from '../add_reducer';
-import SayHelloReducer from '../say_hello_reducer';
+import AddBudgetReducer from "../add_budget_reducer";
+import AddUserReducer from "../add_user_reducer";
 
-export type AddParams = __Infer<typeof AddReducer>;
-export type SayHelloParams = __Infer<typeof SayHelloReducer>;
+export type AddBudgetParams = __Infer<typeof AddBudgetReducer>;
+export type AddUserParams = __Infer<typeof AddUserReducer>;
+
