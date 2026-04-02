@@ -1,5 +1,9 @@
-import { drizzle } from 'drizzle-orm/node-postgres'
+import { drizzle } from "drizzle-orm/node-postgres";
+import * as authSchema from "./auth-schema.ts";
+import * as budgetSchema from "./schema.ts";
 
-import * as schema from './schema.ts'
+const schema = { ...budgetSchema, ...authSchema };
 
-export const db = drizzle(process.env.DATABASE_URL!, { schema })
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required.");
+
+export const db = drizzle(process.env.DATABASE_URL, { schema });

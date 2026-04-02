@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:18@sha256:1e731087339b133199cb8e540809aff2bc4ddef76e25c0f1ea3333640b74341a
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-kuwenta}
+    ports:
+      - 5432:5432
+    volumes:
+     - postgres-data:/var/lib/postgresql
+
+volumes:
+  postgres-data:

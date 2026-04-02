@@ -13,6 +13,7 @@
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check",
+    "auth:generate": "pnpm dlx auth@latest generate --output ./src/db/auth-schema.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
@@ -20,6 +21,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.5.6",
     "@orpc/client": "^1.13.6",
     "@orpc/json-schema": "^1.13.6",
     "@orpc/openapi": "^1.13.6",
