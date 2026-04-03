@@ -1,11 +1,8 @@
-import { electricCollectionOptions } from "@tanstack/electric-db-collection";
 import {
 	createCollection,
 	localOnlyCollectionOptions,
 } from "@tanstack/react-db";
 import { z } from "zod";
-import { selectBudgetsSchema } from "#/db/schema";
-import { orpc } from "#/orpc/client";
 
 const MessageSchema = z.object({
 	id: z.number(),
@@ -19,35 +16,5 @@ export const messagesCollection = createCollection(
 	localOnlyCollectionOptions({
 		getKey: (message) => message.id,
 		schema: MessageSchema,
-	}),
-);
-
-export const budgetsCollection = createCollection(
-	electricCollectionOptions({
-		id: "budgets",
-		shapeOptions: {
-			url: new URL(
-				`/api/budgets`,
-				typeof window !== `undefined`
-					? window.location.origin
-					: `http://localhost:5173`,
-			).toString(),
-			parser: {
-				createdAt: (date: string) => {
-					return new Date(date);
-				},
-			},
-		},
-		schema: selectBudgetsSchema,
-		getKey: (item) => item.id,
-		onInsert: async ({ transaction }) => {
-			console.log(transaction);
-			const { modified: newBudget } = transaction.mutations[0];
-			const result = orpc.addBudgets.call({
-				id: newBudget.id,
-				name: newBudget.name,
-			});
-			console.log(result);
-		},
 	}),
 );

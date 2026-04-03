@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoOrpcTodoRouteImport } from './routes/demo/orpc-todo'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
+import { Route as ApiFinancialAccountsRouteImport } from './routes/api/financialAccounts'
 import { Route as ApiBudgetsRouteImport } from './routes/api/budgets'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
@@ -36,6 +37,11 @@ const DemoOrpcTodoRoute = DemoOrpcTodoRouteImport.update({
 const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
   id: '/demo/better-auth',
   path: '/demo/better-auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFinancialAccountsRoute = ApiFinancialAccountsRouteImport.update({
+  id: '/api/financialAccounts',
+  path: '/api/financialAccounts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBudgetsRoute = ApiBudgetsRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
   '/api/budgets': typeof ApiBudgetsRoute
+  '/api/financialAccounts': typeof ApiFinancialAccountsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
   '/api/budgets': typeof ApiBudgetsRoute
+  '/api/financialAccounts': typeof ApiFinancialAccountsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
   '/api/budgets': typeof ApiBudgetsRoute
+  '/api/financialAccounts': typeof ApiFinancialAccountsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/api/$'
     | '/api/budgets'
+    | '/api/financialAccounts'
     | '/demo/better-auth'
     | '/demo/orpc-todo'
     | '/demo/tanstack-query'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/api/$'
     | '/api/budgets'
+    | '/api/financialAccounts'
     | '/demo/better-auth'
     | '/demo/orpc-todo'
     | '/demo/tanstack-query'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/api/$'
     | '/api/budgets'
+    | '/api/financialAccounts'
     | '/demo/better-auth'
     | '/demo/orpc-todo'
     | '/demo/tanstack-query'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiSplatRoute: typeof ApiSplatRoute
   ApiBudgetsRoute: typeof ApiBudgetsRoute
+  ApiFinancialAccountsRoute: typeof ApiFinancialAccountsRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoOrpcTodoRoute: typeof DemoOrpcTodoRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
@@ -164,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoBetterAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/financialAccounts': {
+      id: '/api/financialAccounts'
+      path: '/api/financialAccounts'
+      fullPath: '/api/financialAccounts'
+      preLoaderRoute: typeof ApiFinancialAccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/budgets': {
       id: '/api/budgets'
       path: '/api/budgets'
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiSplatRoute: ApiSplatRoute,
   ApiBudgetsRoute: ApiBudgetsRoute,
+  ApiFinancialAccountsRoute: ApiFinancialAccountsRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoOrpcTodoRoute: DemoOrpcTodoRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,

@@ -8,6 +8,13 @@
       "when": 1775182800054,
       "tag": "0000_last_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775194274237,
+      "tag": "0001_rainy_thena",
+      "breakpoints": true
     }
   ]
 }

@@ -12,12 +12,12 @@ const handle = async ({ request }: { request: Request }) => {
 	}
 
 	const originUrl = prepareElectricUrl(request.url);
-	originUrl.searchParams.set(`table`, `budgets`);
+	originUrl.searchParams.set(`table`, `financial_accounts`);
 
 	return proxyElectricRequest(originUrl);
 };
 
-export const Route = createFileRoute("/api/budgets")({
+export const Route = createFileRoute("/api/financialAccounts")({
 	server: {
 		handlers: {
 			GET: handle,
