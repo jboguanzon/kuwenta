@@ -1,4 +1,3 @@
-import { onError } from "@orpc/client";
 import { electricCollectionOptions } from "@tanstack/electric-db-collection";
 import {
 	createCollection,
@@ -6,6 +5,7 @@ import {
 } from "@tanstack/react-db";
 import { z } from "zod";
 import { selectBudgetsSchema } from "#/db/schema";
+import { orpc } from "#/orpc/client";
 
 const MessageSchema = z.object({
 	id: z.number(),
@@ -40,5 +40,14 @@ export const budgetsCollection = createCollection(
 		},
 		schema: selectBudgetsSchema,
 		getKey: (item) => item.id,
+		onInsert: async ({ transaction }) => {
+			console.log(transaction);
+			const { modified: newBudget } = transaction.mutations[0];
+			const result = orpc.addBudgets.call({
+				id: newBudget.id,
+				name: newBudget.name,
+			});
+			console.log(result);
+		},
 	}),
 );
