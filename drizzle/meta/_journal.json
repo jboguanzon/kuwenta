@@ -15,6 +15,13 @@
       "when": 1775194274237,
       "tag": "0001_rainy_thena",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775284571788,
+      "tag": "0002_stale_loa",
+      "breakpoints": true
     }
   ]
 }

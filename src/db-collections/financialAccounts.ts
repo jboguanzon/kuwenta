@@ -19,7 +19,6 @@ export const financialAccountsCollection = createCollection(
 		schema: selectFinancialAccountsSchema,
 		getKey: (item) => item.id,
 		onInsert: async ({ transaction }) => {
-			console.log(transaction);
 			const { modified: newFinancialAccount } = transaction.mutations[0];
 			orpc.addFinancialAccount.call({
 				id: newFinancialAccount.id,

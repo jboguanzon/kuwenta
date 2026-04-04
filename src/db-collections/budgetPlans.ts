@@ -1,28 +1,28 @@
 import { snakeCamelMapper } from "@electric-sql/client";
 import { electricCollectionOptions } from "@tanstack/electric-db-collection";
 import { createCollection } from "@tanstack/react-db";
-import { selectBudgetsSchema } from "#/db/budgets-schema";
+import { selectBudgetPlansSchema } from "#/db/budget-plans-schema";
 import { orpc } from "#/orpc/client";
 
-export const budgetsCollection = createCollection(
+export const budgetPlansCollection = createCollection(
 	electricCollectionOptions({
-		id: "budgets",
+		id: "budgetPlans",
 		shapeOptions: {
 			url: new URL(
-				`/api/budgets`,
+				`/api/budgetPlans`,
 				typeof window !== `undefined`
 					? window.location.origin
 					: `http://localhost:5173`,
 			).toString(),
 			columnMapper: snakeCamelMapper(),
 		},
-		schema: selectBudgetsSchema,
+		schema: selectBudgetPlansSchema,
 		getKey: (item) => item.id,
 		onInsert: async ({ transaction }) => {
-			const { modified: newBudget } = transaction.mutations[0];
-			orpc.addBudget.call({
-				id: newBudget.id,
-				name: newBudget.name,
+			const { modified: newBudgetPlan } = transaction.mutations[0];
+			orpc.addBudgetPlan.call({
+				id: newBudgetPlan.id,
+				name: newBudgetPlan.name,
 			});
 		},
 	}),

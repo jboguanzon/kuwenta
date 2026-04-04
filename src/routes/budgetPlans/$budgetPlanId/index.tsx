@@ -169,7 +169,7 @@ const columns = [
 	),
 ];
 
-export const Route = createFileRoute("/budgets/$budgetId/")({
+export const Route = createFileRoute("/budgetPlans/$budgetPlanId/")({
 	component: RouteComponent,
 });
 
@@ -186,7 +186,7 @@ function RouteComponent() {
 		getSubRows: (row) => row.subEntries,
 		getCoreRowModel: getCoreRowModel(),
 		getExpandedRowModel: getExpandedRowModel(),
-	});
+	})
 
 	return (
 		<div>
@@ -222,5 +222,5 @@ function RouteComponent() {
 				</Table>
 			</div>
 		</div>
-	);
+	)
 }

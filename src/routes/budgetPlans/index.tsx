@@ -2,7 +2,7 @@ import { useLiveQuery } from "@tanstack/react-db";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Input } from "#/components/ui/input";
-import { budgetsCollection } from "#/db-collections/budgets";
+import { budgetPlansCollection } from "#/db-collections/budgetPlans";
 import { Button } from "@/components/ui/button";
 import {
 	Field,
@@ -12,13 +12,13 @@ import {
 	FieldSet,
 } from "@/components/ui/field";
 
-export const Route = createFileRoute("/budgets/")({
+export const Route = createFileRoute("/budgetPlans/")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
 	const { data: budgets, isLoading: isLoadingBudgets } = useLiveQuery((q) =>
-		q.from({ budgetsCollection }),
+		q.from({ budgetPlansCollection }),
 	);
 
 	const budgetForm = useForm({
@@ -26,8 +26,7 @@ function RouteComponent() {
 			name: "",
 		},
 		onSubmit: async ({ value }) => {
-			console.log(value);
-			budgetsCollection.insert({
+			budgetPlansCollection.insert({
 				id: crypto.randomUUID(),
 				name: value.name,
 				createdAt: null,
@@ -104,8 +103,8 @@ function RouteComponent() {
 				{budgets.map((budget) => (
 					<Link
 						key={budget.id}
-						to="/budgets/$budgetId"
-						params={{ budgetId: budget.id }}
+						to="/budgetPlans/$budgetPlanId"
+						params={{ budgetPlanId: budget.id }}
 					>
 						{`${budget.id} - ${budget.name} - ${budget.createdAt}`}
 					</Link>

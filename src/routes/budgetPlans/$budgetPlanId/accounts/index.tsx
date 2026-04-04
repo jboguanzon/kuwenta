@@ -12,7 +12,7 @@ import {
 	FieldSet,
 } from "@/components/ui/field";
 
-export const Route = createFileRoute("/budgets/$budgetId/accounts/")({
+export const Route = createFileRoute("/budgetPlans/$budgetPlanId/accounts/")({
 	component: RouteComponent,
 });
 
@@ -33,9 +33,9 @@ function RouteComponent() {
 					? Number(value.currentBalance)
 					: null,
 				createdAt: null,
-			});
+			})
 		},
-	});
+	})
 
 	if (isLoadingFinancialAccounts) {
 		return <div>Loading...</div>;
@@ -79,7 +79,7 @@ function RouteComponent() {
 											Name of financial account.
 										</FieldDescription>
 									</Field>
-								);
+								)
 							}}
 						</financialAccountForm.Field>
 						<financialAccountForm.Field name="currentBalance">
@@ -102,7 +102,7 @@ function RouteComponent() {
 											Current balance of financial account.
 										</FieldDescription>
 									</Field>
-								);
+								)
 							}}
 						</financialAccountForm.Field>
 						<financialAccountForm.Subscribe
@@ -116,8 +116,8 @@ function RouteComponent() {
 									<Button
 										type="reset"
 										onClick={(e) => {
-											e.preventDefault();
-											financialAccountForm.reset();
+											e.preventDefault()
+											financialAccountForm.reset()
 										}}
 									>
 										Reset
@@ -135,5 +135,5 @@ function RouteComponent() {
 				</div>
 			))}
 		</div>
-	);
+	)
 }

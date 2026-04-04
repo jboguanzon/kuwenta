@@ -1,13 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import BetterAuthHeader from "../../integrations/better-auth/header-user.tsx";
 import ThemeToggle from "../ThemeToggle.tsx";
-import { Button } from "../ui/button.tsx";
 import FinancialAccounts from "./FinancialAccounts.tsx";
 
 export default function SideNav() {
 	return (
 		<nav className="flex flex-col">
-			<Link to="/budgets">Switch Budgets</Link>
+			<Link to="/budgetPlans">Switch Budgets</Link>
 
 			<div className="flex flex-col">
 				<BetterAuthHeader />

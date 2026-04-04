@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import SideNav from "#/components/SideNav";
 
-export const Route = createFileRoute("/budgets/$budgetId")({
+export const Route = createFileRoute("/budgetPlans/$budgetPlanId")({
 	component: RouteComponent,
 });
 
@@ -15,5 +15,5 @@ function RouteComponent() {
 				<Outlet />
 			</main>
 		</div>
-	);
+	)
 }

@@ -10,7 +10,7 @@ export const listBudgets = os.input(z.object({})).handler(() => {
 	});
 });
 
-export const addBudgets = os
+export const addBudget = os
 	.input(createBudgetsSchema)
 	.handler(async ({ input }) => {
 		const newBudget = await db.insert(budgets).values({ ...input });

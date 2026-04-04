@@ -1,4 +1,5 @@
-import { addBudgets, listBudgets } from "./budgets";
+import { addBudgetPlan, listBudgetPlans } from "./budgetPlans";
+import { addBudget, listBudgets } from "./budgets";
 import {
 	addFinancialAccount,
 	listFinancialAccounts,
@@ -8,8 +9,10 @@ import { addTodo, listTodos } from "./todos";
 export default {
 	listTodos,
 	addTodo,
+	listBudgetPlans,
+	addBudgetPlan,
 	listBudgets,
-	addBudgets,
+	addBudget,
 	listFinancialAccounts,
 	addFinancialAccount,
 };

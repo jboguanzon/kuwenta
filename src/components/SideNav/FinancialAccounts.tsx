@@ -3,7 +3,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import { financialAccountsCollection } from "#/db-collections/financialAccounts";
 
 export default function FinancialAccounts() {
-	const { budgetId } = useParams({ from: "/budgets/$budgetId" });
+	const { budgetPlanId } = useParams({ from: "/budgetPlans/$budgetPlanId" });
 
 	const { data: financialAccounts, isLoading } = useLiveQuery((q) =>
 		q.from({ financialAccountsCollection }),
@@ -19,8 +19,11 @@ export default function FinancialAccounts() {
 				{financialAccounts.map((financialAccount) => (
 					<Link
 						key={financialAccount.id}
-						to="/budgets/$budgetId/accounts/$accountId"
-						params={{ budgetId: budgetId, accountId: financialAccount.id }}
+						to="/budgetPlans/$budgetPlanId/accounts/$accountId"
+						params={{
+							budgetPlanId: budgetPlanId,
+							accountId: financialAccount.id,
+						}}
 						className="flex justify-between"
 					>
 						<span>{financialAccount.name}</span>
@@ -32,7 +35,10 @@ export default function FinancialAccounts() {
 					</Link>
 				))}
 			</div>
-			<Link to="/budgets/$budgetId/accounts" params={{ budgetId: budgetId }}>
+			<Link
+				to="/budgetPlans/$budgetPlanId/accounts"
+				params={{ budgetPlanId: budgetPlanId }}
+			>
 				Add Account
 			</Link>
 		</div>
