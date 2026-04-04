@@ -1,5 +1,5 @@
+import { useLiveQuery } from "@tanstack/react-db";
 import { createFileRoute } from "@tanstack/react-router";
-
 import {
 	createColumnHelper,
 	type ExpandedState,
@@ -8,7 +8,9 @@ import {
 	getExpandedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import AddCategoryDropdown from "#/components/AddCategoryDropdown";
+import { categoriesCollection } from "#/db-collections/categories";
 import {
 	Table,
 	TableBody,
@@ -18,7 +20,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 
-const activeMonths = ["2026-01", "2026-02", "2026-03", "2026-04"];
+const activeMonths = ["2026-01", "2026-02", "2026-03"];
 
 type BudgetAllocation = {
 	id: string;
@@ -134,16 +136,25 @@ const defaultGroupedData: GroupedBudgetEntry[] = [
 // const columnHelper = createColumnHelper<BudgetEntry>();
 const columnHelper = createColumnHelper<GroupedBudgetEntry>();
 const columns = [
-	columnHelper.accessor("name", {
-		header: () => "Categories",
+	columnHelper.accessor((row) => row.name, {
+		id: "categories",
+		header: () => (
+			<div className="flex items-center">
+				<span>Categories</span>
+				<AddCategoryDropdown />
+			</div>
+		),
 		cell: ({ row, getValue }) => (
-			<div>
-				{row.getCanExpand() && (
-					<button type="button" onClick={row.getToggleExpandedHandler()}>
-						{row.getIsExpanded() ? "▼" : "▶"}
-					</button>
-				)}
-				{getValue()}
+			<div className="flex grow">
+				<div className="flex gap-2">
+					{row.getCanExpand() && (
+						<button type="button" onClick={row.getToggleExpandedHandler()}>
+							{row.getIsExpanded() ? "▼" : "▶"}
+						</button>
+					)}
+					<span className="flex items-center">{getValue()}</span>
+				</div>
+				<AddCategoryDropdown parentCategoryId={row.original.id} />
 			</div>
 		),
 	}),
@@ -175,18 +186,57 @@ export const Route = createFileRoute("/budgetPlans/$budgetPlanId/")({
 
 function RouteComponent() {
 	// const [data, _setData] = useState(() => [...defaultData]);
-	const [data, _setData] = useState(() => [...defaultGroupedData]);
+	// const [data, _setData] = useState(() => [...defaultGroupedData]);
 	const [expanded, setExpanded] = useState<ExpandedState>({});
 
+	const { data: categoriesData, isLoading } = useLiveQuery((q) =>
+		q.from({ category: categoriesCollection }),
+	);
+
+	const tableData = useMemo<GroupedBudgetEntry[]>(() => {
+		if (!categoriesData) return [];
+
+		const categoryMap = new Map(
+			categoriesData.map((categoryData) => [categoryData.id, categoryData]),
+		);
+
+		const buildEntry = (categoryId: string): GroupedBudgetEntry | null => {
+			const category = categoryMap.get(categoryId);
+
+			if (!category) return null;
+
+			const subCategories = categoriesData
+				.filter((categoryData) => categoryData.parentId === categoryId)
+				.map((categoryData) => buildEntry(categoryData.id))
+				.filter((subCategoryData) => subCategoryData !== null);
+
+			return {
+				id: categoryId,
+				name: category.name,
+				allocations: {},
+				subEntries: subCategories,
+			};
+		};
+
+		return categoriesData
+			.filter((categoryData) => categoryData.parentId === null)
+			.map((categoryData) => buildEntry(categoryData.id))
+			.filter((tableData) => tableData !== null);
+	}, [categoriesData]);
+
 	const table = useReactTable({
-		data,
-		columns,
+		data: tableData,
+		columns: columns,
 		state: { expanded },
 		onExpandedChange: setExpanded,
 		getSubRows: (row) => row.subEntries,
 		getCoreRowModel: getCoreRowModel(),
 		getExpandedRowModel: getExpandedRowModel(),
-	})
+	});
+
+	if (isLoading) {
+		return <div>Loading...</div>;
+	}
 
 	return (
 		<div>
@@ -213,7 +263,15 @@ function RouteComponent() {
 							<TableRow key={row.id}>
 								{row.getVisibleCells().map((cell) => (
 									<TableCell key={cell.id}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+										<div className="flex gap-1">
+											{cell.column.id === "categories" && row.depth > 0
+												? ">".repeat(row.depth)
+												: null}
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext(),
+											)}
+										</div>
 									</TableCell>
 								))}
 							</TableRow>
@@ -222,5 +280,5 @@ function RouteComponent() {
 				</Table>
 			</div>
 		</div>
-	)
+	);
 }

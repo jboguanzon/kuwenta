@@ -29,7 +29,7 @@ export const categories = pgTable(
 	],
 );
 
-export const selectBudgetsSchema = createSelectSchema(categories);
-export const createBudgetsSchema = createInsertSchema(categories).omit({
+export const selectCategoriesSchema = createSelectSchema(categories);
+export const createCategoriesSchema = createInsertSchema(categories).omit({
 	createdAt: true,
 });

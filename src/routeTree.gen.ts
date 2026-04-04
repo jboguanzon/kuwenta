@@ -15,6 +15,7 @@ import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-qu
 import { Route as DemoOrpcTodoRouteImport } from './routes/demo/orpc-todo'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as ApiFinancialAccountsRouteImport } from './routes/api/financialAccounts'
+import { Route as ApiCategoriesRouteImport } from './routes/api/categories'
 import { Route as ApiBudgetsRouteImport } from './routes/api/budgets'
 import { Route as ApiBudgetPlansRouteImport } from './routes/api/budgetPlans'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
@@ -53,6 +54,11 @@ const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
 const ApiFinancialAccountsRoute = ApiFinancialAccountsRouteImport.update({
   id: '/api/financialAccounts',
   path: '/api/financialAccounts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCategoriesRoute = ApiCategoriesRouteImport.update({
+  id: '/api/categories',
+  path: '/api/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBudgetsRoute = ApiBudgetsRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/api/$': typeof ApiSplatRoute
   '/api/budgetPlans': typeof ApiBudgetPlansRoute
   '/api/budgets': typeof ApiBudgetsRoute
+  '/api/categories': typeof ApiCategoriesRoute
   '/api/financialAccounts': typeof ApiFinancialAccountsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/api/$': typeof ApiSplatRoute
   '/api/budgetPlans': typeof ApiBudgetPlansRoute
   '/api/budgets': typeof ApiBudgetsRoute
+  '/api/categories': typeof ApiCategoriesRoute
   '/api/financialAccounts': typeof ApiFinancialAccountsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/api/$': typeof ApiSplatRoute
   '/api/budgetPlans': typeof ApiBudgetPlansRoute
   '/api/budgets': typeof ApiBudgetsRoute
+  '/api/categories': typeof ApiCategoriesRoute
   '/api/financialAccounts': typeof ApiFinancialAccountsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/api/budgetPlans'
     | '/api/budgets'
+    | '/api/categories'
     | '/api/financialAccounts'
     | '/demo/better-auth'
     | '/demo/orpc-todo'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/api/budgetPlans'
     | '/api/budgets'
+    | '/api/categories'
     | '/api/financialAccounts'
     | '/demo/better-auth'
     | '/demo/orpc-todo'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/api/budgetPlans'
     | '/api/budgets'
+    | '/api/categories'
     | '/api/financialAccounts'
     | '/demo/better-auth'
     | '/demo/orpc-todo'
@@ -215,6 +227,7 @@ export interface RootRouteChildren {
   ApiSplatRoute: typeof ApiSplatRoute
   ApiBudgetPlansRoute: typeof ApiBudgetPlansRoute
   ApiBudgetsRoute: typeof ApiBudgetsRoute
+  ApiCategoriesRoute: typeof ApiCategoriesRoute
   ApiFinancialAccountsRoute: typeof ApiFinancialAccountsRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoOrpcTodoRoute: typeof DemoOrpcTodoRoute
@@ -266,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/api/financialAccounts'
       fullPath: '/api/financialAccounts'
       preLoaderRoute: typeof ApiFinancialAccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/categories': {
+      id: '/api/categories'
+      path: '/api/categories'
+      fullPath: '/api/categories'
+      preLoaderRoute: typeof ApiCategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/budgets': {
@@ -361,6 +381,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSplatRoute: ApiSplatRoute,
   ApiBudgetPlansRoute: ApiBudgetPlansRoute,
   ApiBudgetsRoute: ApiBudgetsRoute,
+  ApiCategoriesRoute: ApiCategoriesRoute,
   ApiFinancialAccountsRoute: ApiFinancialAccountsRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoOrpcTodoRoute: DemoOrpcTodoRoute,
