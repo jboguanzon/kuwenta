@@ -11,7 +11,7 @@ function RouteComponent() {
 			<aside className="w-3xs h-full border-r-2">
 				<SideNav />
 			</aside>
-			<main>
+			<main className="w-full">
 				<Outlet />
 			</main>
 		</div>
