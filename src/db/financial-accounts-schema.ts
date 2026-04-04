@@ -1,10 +1,4 @@
-import {
-	doublePrecision,
-	pgTable,
-	text,
-	timestamp,
-	uuid,
-} from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createSchemaFactory } from "drizzle-zod";
 import { z } from "zod";
 
@@ -15,7 +9,7 @@ const { createSelectSchema, createInsertSchema } = createSchemaFactory({
 export const financialAccounts = pgTable("financial_accounts", {
 	id: uuid().primaryKey(),
 	name: text().notNull(),
-	currentBalance: doublePrecision("current_balance"),
+	currentBalance: integer("current_balance"), // centi-units (cents * 100, e.g. 123.45 = 12345)
 	createdAt: timestamp("created_at").defaultNow(),
 });
 

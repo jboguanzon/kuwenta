@@ -22,6 +22,20 @@
       "when": 1775284571788,
       "tag": "0002_stale_loa",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1775296654446,
+      "tag": "0003_happy_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1775297210510,
+      "tag": "0004_calm_mysterio",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,7 @@
 import { useLiveQuery } from "@tanstack/react-db";
 import { Link, useParams } from "@tanstack/react-router";
 import { financialAccountsCollection } from "#/db-collections/financialAccounts";
+import { toAmountDisplayUnit } from "#/lib/utils";
 
 export default function FinancialAccounts() {
 	const { budgetPlanId } = useParams({ from: "/budgetPlans/$budgetPlanId" });
@@ -27,11 +28,7 @@ export default function FinancialAccounts() {
 						className="flex justify-between"
 					>
 						<span>{financialAccount.name}</span>
-						<span>
-							{financialAccount.currentBalance
-								? financialAccount.currentBalance
-								: "null"}
-						</span>
+						<span>{toAmountDisplayUnit(financialAccount.currentBalance)}</span>
 					</Link>
 				))}
 			</div>

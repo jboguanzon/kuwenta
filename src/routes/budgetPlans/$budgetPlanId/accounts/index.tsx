@@ -3,6 +3,7 @@ import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { Input } from "#/components/ui/input";
 import { financialAccountsCollection } from "#/db-collections/financialAccounts";
+import { toAmountDatabaseUnit } from "#/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
 	Field,
@@ -29,13 +30,11 @@ function RouteComponent() {
 			financialAccountsCollection.insert({
 				id: crypto.randomUUID(),
 				name: value.name,
-				currentBalance: value.currentBalance
-					? Number(value.currentBalance)
-					: null,
+				currentBalance: toAmountDatabaseUnit(Number(value.currentBalance)),
 				createdAt: null,
-			})
+			});
 		},
-	})
+	});
 
 	if (isLoadingFinancialAccounts) {
 		return <div>Loading...</div>;
@@ -79,7 +78,7 @@ function RouteComponent() {
 											Name of financial account.
 										</FieldDescription>
 									</Field>
-								)
+								);
 							}}
 						</financialAccountForm.Field>
 						<financialAccountForm.Field name="currentBalance">
@@ -102,7 +101,7 @@ function RouteComponent() {
 											Current balance of financial account.
 										</FieldDescription>
 									</Field>
-								)
+								);
 							}}
 						</financialAccountForm.Field>
 						<financialAccountForm.Subscribe
@@ -116,8 +115,8 @@ function RouteComponent() {
 									<Button
 										type="reset"
 										onClick={(e) => {
-											e.preventDefault()
-											financialAccountForm.reset()
+											e.preventDefault();
+											financialAccountForm.reset();
 										}}
 									>
 										Reset
@@ -135,5 +134,5 @@ function RouteComponent() {
 				</div>
 			))}
 		</div>
-	)
+	);
 }
