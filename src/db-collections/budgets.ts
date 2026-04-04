@@ -22,7 +22,18 @@ export const budgetsCollection = createCollection(
 			const { modified: newBudget } = transaction.mutations[0];
 			orpc.addBudget.call({
 				id: newBudget.id,
-				name: newBudget.name,
+				month: newBudget.month,
+				categoryId: newBudget.categoryId,
+				amount: newBudget.amount,
+			});
+		},
+		onUpdate: async ({ transaction }) => {
+			const { modified: updatedBudget } = transaction.mutations[0];
+			orpc.updateBudget.call({
+				id: updatedBudget.id,
+				month: updatedBudget.month,
+				categoryId: updatedBudget.categoryId,
+				amount: updatedBudget.amount,
 			});
 		},
 	}),

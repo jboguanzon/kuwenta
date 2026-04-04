@@ -1,7 +1,11 @@
 import { os } from "@orpc/server";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import * as z from "zod";
-import { budgets, createBudgetsSchema } from "#/db/budgets-schema";
+import {
+	budgets,
+	createBudgetsSchema,
+	updateBudgetsSchema,
+} from "#/db/budgets-schema";
 import { db } from "#/db/index";
 
 export const listBudgets = os.input(z.object({})).handler(() => {
@@ -15,4 +19,14 @@ export const addBudget = os
 	.handler(async ({ input }) => {
 		const newBudget = await db.insert(budgets).values({ ...input });
 		return newBudget;
+	});
+
+export const updateBudget = os
+	.input(updateBudgetsSchema)
+	.handler(async ({ input }) => {
+		const updatedBudget = await db
+			.update(budgets)
+			.set({ ...input })
+			.where(eq(budgets.id, input.id));
+		return updatedBudget;
 	});

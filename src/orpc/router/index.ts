@@ -1,5 +1,5 @@
 import { addBudgetPlan, listBudgetPlans } from "./budgetPlans";
-import { addBudget, listBudgets } from "./budgets";
+import { addBudget, listBudgets, updateBudget } from "./budgets";
 import { addCategory, listCategories } from "./categories";
 import {
 	addFinancialAccount,
@@ -14,6 +14,7 @@ export default {
 	addBudgetPlan,
 	listBudgets,
 	addBudget,
+	updateBudget,
 	listCategories,
 	addCategory,
 	listFinancialAccounts,

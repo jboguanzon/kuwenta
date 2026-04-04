@@ -1,4 +1,4 @@
-import { useLiveQuery } from "@tanstack/react-db";
+import { eq, useLiveQuery } from "@tanstack/react-db";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	createColumnHelper,
@@ -10,7 +10,9 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import AddCategoryDropdown from "#/components/AddCategoryDropdown";
+import { budgetsCollection } from "#/db-collections/budgets";
 import { categoriesCollection } from "#/db-collections/categories";
+import { toAmountDatabaseUnit, toAmountDisplayUnit } from "#/lib/utils";
 import {
 	Table,
 	TableBody,
@@ -22,116 +24,28 @@ import {
 
 const activeMonths = ["2026-01", "2026-02", "2026-03"];
 
-type BudgetAllocation = {
-	id: string;
-	budgeted: number;
-	spent: number;
-	balance: number;
+type BudgetRow = {
+	categoryId: string;
+	categoryName: string;
+	parentId: string | null;
+	budgetId: string | null;
+	month: string | null;
+	amount: number | null;
 };
 
-type BudgetEntry = {
-	id: string;
-	name: string;
-	month: string;
+type BudgetAllocation = {
+	budgetId: string | null;
 	budgeted: number;
 	spent: number;
 	balance: number;
-	subEntries?: BudgetEntry[];
 };
 
 type GroupedBudgetEntry = {
-	id: string;
+	categoryId: string;
 	name: string;
 	allocations: Record<string, BudgetAllocation>;
 	subEntries?: GroupedBudgetEntry[];
 };
-
-const defaultGroupedData: GroupedBudgetEntry[] = [
-	{
-		id: "e-1",
-		name: "Needs Group",
-		allocations: {
-			"2026-01": { id: "1-01", budgeted: 10000, spent: 4500, balance: 5500 },
-			"2026-02": { id: "1-02", budgeted: 10000, spent: 5200, balance: 4800 },
-			"2026-03": { id: "1-03", budgeted: 10000, spent: 4800, balance: 5200 },
-		},
-		subEntries: [
-			{
-				id: "se-1",
-				name: "Needs 1",
-				allocations: {
-					"2026-01": { id: "4-01", budgeted: 4000, spent: 1500, balance: 2500 },
-					"2026-02": { id: "4-02", budgeted: 4000, spent: 2000, balance: 2000 },
-					"2026-03": { id: "4-03", budgeted: 4000, spent: 1800, balance: 2200 },
-				},
-			},
-			{
-				id: "se-2",
-				name: "Needs 2",
-				allocations: {
-					"2026-01": { id: "5-01", budgeted: 6000, spent: 3000, balance: 3000 },
-					"2026-02": { id: "5-02", budgeted: 6000, spent: 3200, balance: 2800 },
-					"2026-03": { id: "5-03", budgeted: 6000, spent: 3000, balance: 3000 },
-				},
-			},
-			{
-				id: "se-2",
-				name: "Needs 3 GROUP",
-				allocations: {
-					"2026-01": { id: "5-01", budgeted: 6000, spent: 3000, balance: 3000 },
-					"2026-02": { id: "5-02", budgeted: 6000, spent: 3200, balance: 2800 },
-					"2026-03": { id: "5-03", budgeted: 6000, spent: 3000, balance: 3000 },
-				},
-				subEntries: [
-					{
-						id: "sse-1",
-						name: "Needs 3 SUB-NEED",
-						allocations: {
-							"2026-01": {
-								id: "6-01",
-								budgeted: 6000,
-								spent: 3000,
-								balance: 3000,
-							},
-							"2026-02": {
-								id: "6-02",
-								budgeted: 6000,
-								spent: 3200,
-								balance: 2800,
-							},
-							"2026-03": {
-								id: "6-03",
-								budgeted: 6000,
-								spent: 3000,
-								balance: 3000,
-							},
-						},
-					},
-				],
-			},
-		],
-	},
-	{
-		id: "e-2",
-		name: "Wants Group",
-		allocations: {
-			"2026-01": { id: "2-01", budgeted: 2500, spent: 500, balance: 2000 },
-			"2026-02": { id: "2-02", budgeted: 2500, spent: 800, balance: 1700 },
-			"2026-03": { id: "2-03", budgeted: 2500, spent: 600, balance: 1900 },
-		},
-		subEntries: [],
-	},
-	{
-		id: "e-2",
-		name: "Investments Group",
-		allocations: {
-			"2026-01": { id: "3-01", budgeted: 100000, spent: 90000, balance: 10000 },
-			"2026-02": { id: "3-02", budgeted: 100000, spent: 95000, balance: 5000 },
-			"2026-03": { id: "3-03", budgeted: 100000, spent: 88000, balance: 12000 },
-		},
-		subEntries: [],
-	},
-];
 
 // const columnHelper = createColumnHelper<BudgetEntry>();
 const columnHelper = createColumnHelper<GroupedBudgetEntry>();
@@ -154,7 +68,7 @@ const columns = [
 					)}
 					<span className="flex items-center">{getValue()}</span>
 				</div>
-				<AddCategoryDropdown parentCategoryId={row.original.id} />
+				<AddCategoryDropdown parentCategoryId={row.original.categoryId} />
 			</div>
 		),
 	}),
@@ -166,6 +80,64 @@ const columns = [
 				columnHelper.accessor((row) => row.allocations[month]?.budgeted, {
 					id: `${month}_budgeted`,
 					header: "Budgeted",
+					cell: ({ row, getValue }) => {
+						const dataValue: number | null = getValue();
+						const [displayValue, setDisplayValue] = useState(
+							(toAmountDisplayUnit(dataValue) || 0).toFixed(2).toString(),
+						);
+						const [isEditing, setIsEditing] = useState(false);
+
+						const onBlur = () => {
+							setIsEditing(false);
+							setDisplayValue((value) => Number(value).toFixed(2).toString());
+
+							// TODO: do not create budget entry if value did not change
+							const categoryId = row.original.categoryId;
+							const budgetId = row.original.allocations[month]?.budgetId;
+							if (budgetId) {
+								budgetsCollection.update(budgetId, (draft) => {
+									draft.categoryId = categoryId;
+									draft.amount =
+										toAmountDatabaseUnit(Number(displayValue)) || 0;
+									// TODO: fix expected Date, got string error when not setting createdAt to null
+									draft.createdAt = null;
+								});
+							} else {
+								budgetsCollection.insert({
+									id: crypto.randomUUID(),
+									month: month,
+									categoryId: categoryId,
+									amount: toAmountDatabaseUnit(Number(displayValue)) || 0,
+									createdAt: null,
+								});
+							}
+						};
+
+						const onClick = () => {
+							// TODO: handle non-editable category groups more elegantly
+							if (row.original.subEntries?.length) return;
+							setIsEditing(true);
+						};
+
+						// TODO: calculate totals for category groups
+
+						if (isEditing) {
+							return (
+								<input
+									type="text"
+									value={displayValue}
+									onChange={(e) => setDisplayValue(e.target.value)}
+									onBlur={onBlur}
+								/>
+							);
+						}
+
+						return (
+							<button type="button" onClick={onClick}>
+								{displayValue}
+							</button>
+						);
+					},
 				}),
 				columnHelper.accessor((row) => row.allocations[month]?.spent, {
 					id: `${month}_spent`,
@@ -189,40 +161,97 @@ function RouteComponent() {
 	// const [data, _setData] = useState(() => [...defaultGroupedData]);
 	const [expanded, setExpanded] = useState<ExpandedState>({});
 
-	const { data: categoriesData, isLoading } = useLiveQuery((q) =>
-		q.from({ category: categoriesCollection }),
+	const { data, isLoading } = useLiveQuery((q) =>
+		q
+			.from({ category: categoriesCollection })
+			.join(
+				{ budget: budgetsCollection },
+				({ category, budget }) => eq(category.id, budget.categoryId),
+				"left",
+			)
+			// .where(
+			// 	({ budget }) =>
+			// 		budget.month == null || inArray(budget.month, activeMonths),
+			// )
+			.select(({ category, budget }) => ({
+				categoryId: category.id,
+				categoryName: category.name,
+				parentId: category.parentId,
+				budgetId: budget.id ?? null,
+				month: budget.month ?? null,
+				amount: budget.amount ?? null,
+			}))
+			.orderBy(({ category }) => category.createdAt, "asc"),
 	);
 
 	const tableData = useMemo<GroupedBudgetEntry[]>(() => {
-		if (!categoriesData) return [];
+		const rows = data as BudgetRow[] | undefined;
+		if (!rows) return [];
 
-		const categoryMap = new Map(
-			categoriesData.map((categoryData) => [categoryData.id, categoryData]),
-		);
+		const categoryMeta = new Map<
+			string,
+			{ name: string; parentId: string | null }
+		>();
+		const allocationsByCategory = new Map<
+			string,
+			Record<string, BudgetAllocation>
+		>();
+		const childrenByCategory = new Map<string, string[]>();
+
+		rows.forEach((row) => {
+			if (!categoryMeta.has(row.categoryId)) {
+				categoryMeta.set(row.categoryId, {
+					name: row.categoryName,
+					parentId: row.parentId,
+				});
+			}
+
+			if (!allocationsByCategory.has(row.categoryId)) {
+				allocationsByCategory.set(row.categoryId, {});
+			}
+
+			if (row.parentId) {
+				const existing = childrenByCategory.get(row.parentId) ?? [];
+				if (!existing.includes(row.categoryId)) {
+					existing.push(row.categoryId);
+					childrenByCategory.set(row.parentId, existing);
+				}
+			}
+
+			if (row.budgetId && row.month && row.amount != null) {
+				const allocations = allocationsByCategory.get(row.categoryId);
+				if (allocations) {
+					allocations[row.month] = {
+						budgetId: row.budgetId,
+						budgeted: row.amount,
+						spent: 0,
+						balance: 0,
+					};
+				}
+			}
+		});
 
 		const buildEntry = (categoryId: string): GroupedBudgetEntry | null => {
-			const category = categoryMap.get(categoryId);
+			const meta = categoryMeta.get(categoryId);
+			if (!meta) return null;
 
-			if (!category) return null;
-
-			const subCategories = categoriesData
-				.filter((categoryData) => categoryData.parentId === categoryId)
-				.map((categoryData) => buildEntry(categoryData.id))
-				.filter((subCategoryData) => subCategoryData !== null);
+			const subEntries = (childrenByCategory.get(categoryId) ?? [])
+				.map(buildEntry)
+				.filter((entry): entry is GroupedBudgetEntry => entry !== null);
 
 			return {
-				id: categoryId,
-				name: category.name,
-				allocations: {},
-				subEntries: subCategories,
+				categoryId,
+				name: meta.name,
+				allocations: allocationsByCategory.get(categoryId) ?? {},
+				subEntries: subEntries.length ? subEntries : undefined,
 			};
 		};
 
-		return categoriesData
-			.filter((categoryData) => categoryData.parentId === null)
-			.map((categoryData) => buildEntry(categoryData.id))
-			.filter((tableData) => tableData !== null);
-	}, [categoriesData]);
+		return Array.from(categoryMeta.entries())
+			.filter(([, meta]) => meta.parentId === null)
+			.map(([id]) => buildEntry(id))
+			.filter((entry): entry is GroupedBudgetEntry => entry !== null);
+	}, [data]);
 
 	const table = useReactTable({
 		data: tableData,
