@@ -10,18 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BudgetsIndexRouteImport } from './routes/budgets/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoOrpcTodoRouteImport } from './routes/demo/orpc-todo'
 import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
 import { Route as ApiFinancialAccountsRouteImport } from './routes/api/financialAccounts'
 import { Route as ApiBudgetsRouteImport } from './routes/api/budgets'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as BudgetsBudgetIdRouteRouteImport } from './routes/budgets/$budgetId/route'
+import { Route as BudgetsBudgetIdIndexRouteImport } from './routes/budgets/$budgetId/index'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as BudgetsBudgetIdAccountsIndexRouteImport } from './routes/budgets/$budgetId/accounts/index'
+import { Route as BudgetsBudgetIdAccountsAccountIdRouteImport } from './routes/budgets/$budgetId/accounts/$accountId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BudgetsIndexRoute = BudgetsIndexRouteImport.update({
+  id: '/budgets/',
+  path: '/budgets/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -54,6 +64,16 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BudgetsBudgetIdRouteRoute = BudgetsBudgetIdRouteRouteImport.update({
+  id: '/budgets/$budgetId',
+  path: '/budgets/$budgetId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BudgetsBudgetIdIndexRoute = BudgetsBudgetIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BudgetsBudgetIdRouteRoute,
+} as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
   path: '/api/rpc/$',
@@ -64,17 +84,34 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BudgetsBudgetIdAccountsIndexRoute =
+  BudgetsBudgetIdAccountsIndexRouteImport.update({
+    id: '/accounts/',
+    path: '/accounts/',
+    getParentRoute: () => BudgetsBudgetIdRouteRoute,
+  } as any)
+const BudgetsBudgetIdAccountsAccountIdRoute =
+  BudgetsBudgetIdAccountsAccountIdRouteImport.update({
+    id: '/accounts/$accountId',
+    path: '/accounts/$accountId',
+    getParentRoute: () => BudgetsBudgetIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/budgets/$budgetId': typeof BudgetsBudgetIdRouteRouteWithChildren
   '/api/$': typeof ApiSplatRoute
   '/api/budgets': typeof ApiBudgetsRoute
   '/api/financialAccounts': typeof ApiFinancialAccountsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/budgets/': typeof BudgetsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/budgets/$budgetId/': typeof BudgetsBudgetIdIndexRoute
+  '/budgets/$budgetId/accounts/$accountId': typeof BudgetsBudgetIdAccountsAccountIdRoute
+  '/budgets/$budgetId/accounts/': typeof BudgetsBudgetIdAccountsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,33 +121,47 @@ export interface FileRoutesByTo {
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/budgets': typeof BudgetsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/budgets/$budgetId': typeof BudgetsBudgetIdIndexRoute
+  '/budgets/$budgetId/accounts/$accountId': typeof BudgetsBudgetIdAccountsAccountIdRoute
+  '/budgets/$budgetId/accounts': typeof BudgetsBudgetIdAccountsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/budgets/$budgetId': typeof BudgetsBudgetIdRouteRouteWithChildren
   '/api/$': typeof ApiSplatRoute
   '/api/budgets': typeof ApiBudgetsRoute
   '/api/financialAccounts': typeof ApiFinancialAccountsRoute
   '/demo/better-auth': typeof DemoBetterAuthRoute
   '/demo/orpc-todo': typeof DemoOrpcTodoRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/budgets/': typeof BudgetsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/budgets/$budgetId/': typeof BudgetsBudgetIdIndexRoute
+  '/budgets/$budgetId/accounts/$accountId': typeof BudgetsBudgetIdAccountsAccountIdRoute
+  '/budgets/$budgetId/accounts/': typeof BudgetsBudgetIdAccountsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/budgets/$budgetId'
     | '/api/$'
     | '/api/budgets'
     | '/api/financialAccounts'
     | '/demo/better-auth'
     | '/demo/orpc-todo'
     | '/demo/tanstack-query'
+    | '/budgets/'
     | '/api/auth/$'
     | '/api/rpc/$'
+    | '/budgets/$budgetId/'
+    | '/budgets/$budgetId/accounts/$accountId'
+    | '/budgets/$budgetId/accounts/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,29 +171,40 @@ export interface FileRouteTypes {
     | '/demo/better-auth'
     | '/demo/orpc-todo'
     | '/demo/tanstack-query'
+    | '/budgets'
     | '/api/auth/$'
     | '/api/rpc/$'
+    | '/budgets/$budgetId'
+    | '/budgets/$budgetId/accounts/$accountId'
+    | '/budgets/$budgetId/accounts'
   id:
     | '__root__'
     | '/'
+    | '/budgets/$budgetId'
     | '/api/$'
     | '/api/budgets'
     | '/api/financialAccounts'
     | '/demo/better-auth'
     | '/demo/orpc-todo'
     | '/demo/tanstack-query'
+    | '/budgets/'
     | '/api/auth/$'
     | '/api/rpc/$'
+    | '/budgets/$budgetId/'
+    | '/budgets/$budgetId/accounts/$accountId'
+    | '/budgets/$budgetId/accounts/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BudgetsBudgetIdRouteRoute: typeof BudgetsBudgetIdRouteRouteWithChildren
   ApiSplatRoute: typeof ApiSplatRoute
   ApiBudgetsRoute: typeof ApiBudgetsRoute
   ApiFinancialAccountsRoute: typeof ApiFinancialAccountsRoute
   DemoBetterAuthRoute: typeof DemoBetterAuthRoute
   DemoOrpcTodoRoute: typeof DemoOrpcTodoRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  BudgetsIndexRoute: typeof BudgetsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
@@ -154,6 +216,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/budgets/': {
+      id: '/budgets/'
+      path: '/budgets'
+      fullPath: '/budgets/'
+      preLoaderRoute: typeof BudgetsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -198,6 +267,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/budgets/$budgetId': {
+      id: '/budgets/$budgetId'
+      path: '/budgets/$budgetId'
+      fullPath: '/budgets/$budgetId'
+      preLoaderRoute: typeof BudgetsBudgetIdRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/budgets/$budgetId/': {
+      id: '/budgets/$budgetId/'
+      path: '/'
+      fullPath: '/budgets/$budgetId/'
+      preLoaderRoute: typeof BudgetsBudgetIdIndexRouteImport
+      parentRoute: typeof BudgetsBudgetIdRouteRoute
+    }
     '/api/rpc/$': {
       id: '/api/rpc/$'
       path: '/api/rpc/$'
@@ -212,17 +295,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/budgets/$budgetId/accounts/': {
+      id: '/budgets/$budgetId/accounts/'
+      path: '/accounts'
+      fullPath: '/budgets/$budgetId/accounts/'
+      preLoaderRoute: typeof BudgetsBudgetIdAccountsIndexRouteImport
+      parentRoute: typeof BudgetsBudgetIdRouteRoute
+    }
+    '/budgets/$budgetId/accounts/$accountId': {
+      id: '/budgets/$budgetId/accounts/$accountId'
+      path: '/accounts/$accountId'
+      fullPath: '/budgets/$budgetId/accounts/$accountId'
+      preLoaderRoute: typeof BudgetsBudgetIdAccountsAccountIdRouteImport
+      parentRoute: typeof BudgetsBudgetIdRouteRoute
+    }
   }
 }
 
+interface BudgetsBudgetIdRouteRouteChildren {
+  BudgetsBudgetIdIndexRoute: typeof BudgetsBudgetIdIndexRoute
+  BudgetsBudgetIdAccountsAccountIdRoute: typeof BudgetsBudgetIdAccountsAccountIdRoute
+  BudgetsBudgetIdAccountsIndexRoute: typeof BudgetsBudgetIdAccountsIndexRoute
+}
+
+const BudgetsBudgetIdRouteRouteChildren: BudgetsBudgetIdRouteRouteChildren = {
+  BudgetsBudgetIdIndexRoute: BudgetsBudgetIdIndexRoute,
+  BudgetsBudgetIdAccountsAccountIdRoute: BudgetsBudgetIdAccountsAccountIdRoute,
+  BudgetsBudgetIdAccountsIndexRoute: BudgetsBudgetIdAccountsIndexRoute,
+}
+
+const BudgetsBudgetIdRouteRouteWithChildren =
+  BudgetsBudgetIdRouteRoute._addFileChildren(BudgetsBudgetIdRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BudgetsBudgetIdRouteRoute: BudgetsBudgetIdRouteRouteWithChildren,
   ApiSplatRoute: ApiSplatRoute,
   ApiBudgetsRoute: ApiBudgetsRoute,
   ApiFinancialAccountsRoute: ApiFinancialAccountsRoute,
   DemoBetterAuthRoute: DemoBetterAuthRoute,
   DemoOrpcTodoRoute: DemoOrpcTodoRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  BudgetsIndexRoute: BudgetsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
