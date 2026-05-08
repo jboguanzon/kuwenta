@@ -8,7 +8,7 @@ import {
 	getExpandedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddCategoryDropdown from "#/components/AddCategoryDropdown";
 import { budgetsCollection } from "#/db-collections/budgets";
 import { categoriesCollection } from "#/db-collections/categories";
@@ -82,10 +82,18 @@ const columns = [
 					header: "Budgeted",
 					cell: ({ row, getValue }) => {
 						const dataValue: number | null = getValue();
-						const [displayValue, setDisplayValue] = useState(
-							(toAmountDisplayUnit(dataValue) || 0).toFixed(2).toString(),
-						);
+						const formattedDataValue = (toAmountDisplayUnit(dataValue) || 0)
+							.toFixed(2)
+							.toString();
+						const [displayValue, setDisplayValue] =
+							useState(formattedDataValue);
 						const [isEditing, setIsEditing] = useState(false);
+
+						useEffect(() => {
+							if (!isEditing) {
+								setDisplayValue(formattedDataValue);
+							}
+						}, [formattedDataValue, isEditing]);
 
 						const onBlur = () => {
 							setIsEditing(false);
@@ -239,10 +247,34 @@ function RouteComponent() {
 				.map(buildEntry)
 				.filter((entry): entry is GroupedBudgetEntry => entry !== null);
 
+			const aggregations: Record<string, BudgetAllocation> = {};
+			const directAllocations = allocationsByCategory.get(categoryId) ?? {};
+
+			if (subEntries.length === 0) {
+				for (const [month, allocation] of Object.entries(directAllocations)) {
+					aggregations[month] = { ...allocation };
+				}
+			}
+
+			for (const subEntry of subEntries) {
+				for (const [month, subAllocation] of Object.entries(
+					subEntry.allocations,
+				)) {
+					if (!aggregations[month]) {
+						aggregations[month] = { ...subAllocation };
+					} else {
+						const allocation = aggregations[month];
+						allocation.budgeted += subAllocation.budgeted;
+						allocation.spent += subAllocation.spent;
+						allocation.balance += subAllocation.balance;
+					}
+				}
+			}
+
 			return {
 				categoryId,
 				name: meta.name,
-				allocations: allocationsByCategory.get(categoryId) ?? {},
+				allocations: aggregations,
 				subEntries: subEntries.length ? subEntries : undefined,
 			};
 		};
