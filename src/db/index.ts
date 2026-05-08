@@ -5,7 +5,7 @@ import * as budgetsSchema from "./budgets-schema.ts";
 import * as categoriesSchema from "./categories-schema.ts";
 import * as financialAccountsSchema from "./financial-accounts-schema.ts";
 
-const schema = {
+export const schema = {
 	...authSchema,
 	...budgetPlansSchema,
 	...budgetsSchema,

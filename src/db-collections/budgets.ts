@@ -20,7 +20,7 @@ export const budgetsCollection = createCollection(
 		getKey: (item) => item.id,
 		onInsert: async ({ transaction }) => {
 			const { modified: newBudget } = transaction.mutations[0];
-			orpc.addBudget.call({
+			await orpc.addBudget.call({
 				id: newBudget.id,
 				month: newBudget.month,
 				categoryId: newBudget.categoryId,
@@ -29,12 +29,14 @@ export const budgetsCollection = createCollection(
 		},
 		onUpdate: async ({ transaction }) => {
 			const { modified: updatedBudget } = transaction.mutations[0];
-			orpc.updateBudget.call({
+			const result = await orpc.updateBudget.call({
 				id: updatedBudget.id,
 				month: updatedBudget.month,
 				categoryId: updatedBudget.categoryId,
 				amount: updatedBudget.amount,
 			});
+
+			return { txid: result.txid };
 		},
 	}),
 );
